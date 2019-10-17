@@ -1,7 +1,7 @@
 {
-  "name": "npm-module-boilerplate",
+  "name": "simple-do-spaces",
   "version": "1.0.0",
-  "description": "Boilerplate for npm modules with ES6 features and syntax",
+  "description": "Simple Client to handle Digital Ocean Spaces files.",
   "main": "./lib/index.js",
   "scripts": {
     "clean": "rimraf lib",
