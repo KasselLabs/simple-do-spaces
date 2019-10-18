@@ -42,7 +42,15 @@ client.listPathFiles(path);
 
 #### Return array with URL of files
 
-### Delete files
+### Delete one file
+
+```js
+client.deleteFile(path);
+```
+
+- **path** : Relative path to one file in DO spaces to delete it
+
+### Delete multiple files
 
 ```js
 client.deletePaths(paths);
