@@ -78,6 +78,12 @@ class SpacesClient {
     return this.deleteObjects(objects);
   }
 
+  async deleteFile(path) {
+    return this.deleteObjects([{
+      Key: path,
+    }]);
+  }
+
   async deleteFolder(folderPath) {
     const objects = await this.listPathObjects(folderPath);
     return this.deleteObjects(objects);
