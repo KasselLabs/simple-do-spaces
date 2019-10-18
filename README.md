@@ -1,40 +1,65 @@
 # Simple Digital Ocean Spaces Client
 
-[![Build Status](https://travis-ci.org/flexdinesh/npm-module-boilerplate.svg?branch=master)](https://travis-ci.org/flexdinesh/npm-module-boilerplate) [![dependencies Status](https://david-dm.org/flexdinesh/npm-module-boilerplate/status.svg)](https://david-dm.org/flexdinesh/npm-module-boilerplate) [![devDependencies Status](https://david-dm.org/flexdinesh/npm-module-boilerplate/dev-status.svg)](https://david-dm.org/flexdinesh/npm-module-boilerplate?type=dev) [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
+[![Build Status](https://travis-ci.org/KasselLabs/simple-do-spaces.svg?branch=master)](https://travis-ci.org/KasselLabs/simple-do-spaces) [![dependencies Status](https://david-dm.org/KasselLabs/simple-do-spaces/status.svg)](https://david-dm.org/KasselLabs/simple-do-spaces) [![devDependencies Status](https://david-dm.org/KasselLabs/simple-do-spaces/dev-status.svg)](https://david-dm.org/KasselLabs/simple-do-spaces?type=dev) [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 
+## Usage
 
-## TODO UPDATE README BOILERPLATE
+### Create client for Digital Ocean Spaces API
 
-**Start developing your NPM module in seconds** ✨
+```js
+import SpacesClient from 'simples-do-spaces';
 
-Readymade boilerplate setup with all the best practices to kick start your npm/node module development.
+const client = new SpacesClient(
+  'sfo2.digitaloceanspaces.com', // Required, Digital Ocean Spaces Endpoint
+  'bucketName', // Required. Bucket name
+  'accessKeyId', // Optional. Access key, can be provided via env var AWS_ACCESS_KEY_ID
+  'secretAccessKey' // Optional. Access key secret, can be env var AWS_SECRET_ACCESS_KEY
+);
 
-Happy hacking =)
+```
 
-# Features
+All methods returns a Promise which resolves to the values described below.
 
-* **ES6/ESNext** - Write _ES6_ code and _Babel_ will transpile it to ES5 for backwards compatibility
-* **Test** - _Mocha_ with _Istanbul_ coverage
-* **Lint** - Preconfigured _ESlint_ with _Airbnb_ config
-* **CI** - _TravisCI_ configuration setup
-* **Minify** - Built code will be minified for performance
+### Upload file
 
-# Commands
-- `npm run clean` - Remove `lib/` directory
-- `npm test` - Run tests with linting and coverage results.
-- `npm test:only` - Run tests without linting or coverage.
-- `npm test:watch` - You can even re-run tests on file changes!
-- `npm test:prod` - Run tests with minified code.
-- `npm run test:examples` - Test written examples on pure JS for better understanding module usage.
-- `npm run lint` - Run ESlint with airbnb-config
-- `npm run cover` - Get coverage report for your code.
-- `npm run build` - Babel will transpile ES6 => ES5 and minify the code.
-- `npm run prepublish` - Hook for npm. Do all the checks before publishing your module.
+```js
+client.uploadFile(uploadFilePath, destinationPath, permission);
+```
 
-# Installation
-Just clone this repo and remove `.git` folder.
+- **uploadFilePath** : File path in file system
+- **destinationPath** : Path to save in DO Spaces
+- **permission** : Permission of the file, default is `private`, can also be `public-red`.
 
+#### Return file URL in DO Spaces CDN
 
-# License
+### List files
 
-MIT © Dinesh Pandiyan
+```js
+client.listPathFiles(path);
+```
+
+- **path** : Path in DO Spaces to list
+
+#### Return array with URL of files
+
+### Delete files
+
+```js
+client.deletePaths(paths);
+```
+
+- **paths** : Array of relative paths in DO spaces to delete
+
+### Download file
+
+```js
+client.downloadFile(filePathToRead, filePathToSave, createDirIfNotExists);
+```
+
+- **filePathToRead** : Path in DO Spaces
+- **filePathToSave** : Path to save in file system
+- **createDirIfNotExists** : Boolean to create the folder if the it doesn't exists. Default is `true`
+
+## License
+
+MIT © Bruno Orlandi

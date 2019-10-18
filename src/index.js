@@ -27,7 +27,7 @@ class SpacesClient {
     return `https://${this.bucket}.${this.endpoint}/${path}`;
   }
 
-  uploadFile(
+  async uploadFile(
     uploadFilePath,
     destinationPath,
     permission = 'private',
@@ -54,7 +54,7 @@ class SpacesClient {
     });
   }
 
-  listPathObjects(path) {
+  async listPathObjects(path) {
     return new Promise((resolve, reject) => {
       this.s3client.listObjectsV2({
         Bucket: this.bucket,
@@ -111,7 +111,7 @@ class SpacesClient {
     return this.deleteObjects(objects);
   }
 
-  downloadFile(
+  async downloadFile(
     filePathToRead,
     filePathToSave,
     createDirIfNotExists = true
