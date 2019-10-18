@@ -32,47 +32,27 @@ class SpacesClient {
     destinationPath,
     permission = 'private',
   ) {
-    return new Promise((resolve, reject) => {
-      this.s3client.upload({
-        Bucket: this.bucket,
-        Body: fs.createReadStream(uploadFilePath),
-        Key: destinationPath,
-        ACL: permission,
-        // ContentDisposition: 'attachment',
-        ContentType: mime.lookup(uploadFilePath),
-      }, (err, data) => {
-        if (err) {
-          reject(err);
-        }
+    await this.s3client.upload({
+      Bucket: this.bucket,
+      Body: fs.createReadStream(uploadFilePath),
+      Key: destinationPath,
+      ACL: permission,
+      // ContentDisposition: 'attachment',
+      ContentType: mime.lookup(uploadFilePath),
+    }).promise();
 
-        if (data) {
-          const url = this.getURL(destinationPath);
-          const cdnURL = url.replace(/digitaloceanspaces/, 'cdn.digitaloceanspaces');
-          resolve(cdnURL);
-        }
-      });
-    });
+    const url = this.getURL(destinationPath);
+    const cdnURL = url.replace(/digitaloceanspaces/, 'cdn.digitaloceanspaces');
+    return cdnURL;
   }
 
   async listPathObjects(path) {
-    return new Promise((resolve, reject) => {
-      this.s3client.listObjectsV2({
-        Bucket: this.bucket,
-        Prefix: path,
-      }, (err, data) => {
-        if (err) {
-          reject(err);
-          return;
-        }
+    const data = await this.s3client.listObjectsV2({
+      Bucket: this.bucket,
+      Prefix: path,
+    }).promise();
 
-        if (data.Contents.length === 0) {
-          resolve([]);
-          return;
-        }
-
-        resolve(data.Contents);
-      });
-    });
+    return data.Contents;
   }
 
   async listPathFiles(path) {
@@ -81,22 +61,14 @@ class SpacesClient {
   }
 
   async deleteObjects(objects) {
-    return new Promise((resolve, reject) => {
-      this.s3client.deleteObjects({
+    return this.s3client.deleteObjects({
         Bucket: this.bucket,
         Delete: {
           Objects: objects.map(object => ({
             Key: object.Key,
           })),
         },
-      }, (err, data) => {
-        if (err) {
-          reject(err);
-          return;
-        }
-        resolve(data);
-      });
-    });
+      }).promise()
   }
 
   async deletePaths(paths) {
