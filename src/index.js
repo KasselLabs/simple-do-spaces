@@ -36,7 +36,7 @@ class SpacesClient {
       Bucket: this.bucket,
       Body: fs.createReadStream(uploadFilePath),
       Key: destinationPath,
-      ACL: permission,
+      ACL: permission === 'public' ? 'public-read' : permission,
       // ContentDisposition: 'attachment',
       ContentType: mime.lookup(uploadFilePath),
     }).promise();
