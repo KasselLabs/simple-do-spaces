@@ -62,13 +62,13 @@ class SpacesClient {
 
   async deleteObjects(objects) {
     return this.s3client.deleteObjects({
-        Bucket: this.bucket,
-        Delete: {
-          Objects: objects.map(object => ({
-            Key: object.Key,
-          })),
-        },
-      }).promise()
+      Bucket: this.bucket,
+      Delete: {
+        Objects: objects.map(object => ({
+          Key: object.Key,
+        })),
+      },
+    }).promise();
   }
 
   async deletePaths(paths) {
