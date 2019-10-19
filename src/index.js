@@ -1,8 +1,7 @@
 import AWS from 'aws-sdk';
 import fs from 'fs';
+import nodePath from 'path';
 import mime from 'mime-types';
-
-import createDirPath from './createDirPath';
 
 class SpacesClient {
   constructor(endpoint, bucket, accessKeyId = null, secretAccessKey = null) {
@@ -95,7 +94,8 @@ class SpacesClient {
     createDirIfNotExists = true
   ) {
     if (createDirIfNotExists) {
-      createDirPath(filePathToSave);
+      const parentPath = nodePath.dirname(filePathToSave);
+      await fs.promises.mkdir(parentPath, { recursive: true });
     }
 
     return new Promise((resolve, reject) => {
