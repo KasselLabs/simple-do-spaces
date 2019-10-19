@@ -4,6 +4,10 @@
 
 ## Usage
 
+### Credentials setup
+
+You can set the environment variables `AWS_ACCESS_KEY_ID` and `AWS_SECRET_KEY` as default credentials for the S3 SDK which is also used by Digital Ocean Spaces API.
+
 ### Create client for Digital Ocean Spaces API
 
 ```js
