@@ -26,6 +26,11 @@ class SpacesClient {
     return `https://${this.bucket}.${this.endpoint}/${path}`;
   }
 
+  getCDNURL(path) {
+    const url = this.getURL(path);
+    return url.replace(/digitaloceanspaces/, 'cdn.digitaloceanspaces');
+  }
+
   async uploadFile(
     uploadFilePath,
     destinationPath,
@@ -40,9 +45,7 @@ class SpacesClient {
       ContentType: mime.lookup(uploadFilePath),
     }).promise();
 
-    const url = this.getURL(destinationPath);
-    const cdnURL = url.replace(/digitaloceanspaces/, 'cdn.digitaloceanspaces');
-    return cdnURL;
+    return this.getCDNURL(destinationPath);
   }
 
   async listPathObjects(path) {
@@ -56,7 +59,7 @@ class SpacesClient {
 
   async listPathFiles(path) {
     const objects = await this.listPathObjects(path);
-    return objects.map(({ Key }) => this.getURL(Key));
+    return objects.map(({ Key }) => this.getCDNURL(Key));
   }
 
   async deleteObjects(objects) {
