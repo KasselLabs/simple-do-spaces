@@ -32,7 +32,7 @@ client.uploadFile(uploadFilePath, destinationPath, permission);
 
 - **uploadFilePath** : File path in file system
 - **destinationPath** : Path to save in DO Spaces
-- **permission** : Permission of the file, default is `private`, can also be `public-red`.
+- **permission** : Permission of the file, default is `private`, can also be `public-read`.
 
 #### Return file URL in DO Spaces CDN
 
