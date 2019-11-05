@@ -35,6 +35,7 @@ class SpacesClient {
     uploadFilePath,
     destinationPath,
     permission = 'private',
+    options = {},
   ) {
     await this.s3client.upload({
       Bucket: this.bucket,
@@ -43,6 +44,7 @@ class SpacesClient {
       ACL: permission === 'public' ? 'public-read' : permission,
       // ContentDisposition: 'attachment',
       ContentType: mime.lookup(uploadFilePath),
+      ...options,
     }).promise();
 
     return this.getCDNURL(destinationPath);
