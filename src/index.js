@@ -3,6 +3,22 @@ import fs from 'fs';
 import nodePath from 'path';
 import mime from 'mime-types';
 
+const SortOrder = {
+  ASC: 'ASC',
+  DESC: 'DESC'
+};
+
+function sortFilesByDate(filesList, sortByDate = SortOrder.ASC) {
+  const result = filesList.sort((a, b) => {
+    if (sortByDate === SortOrder.DESC) {
+      return a.lastModified.getTime() < b.lastModified.getTime();
+    }
+    return a.lastModified.getTime() > b.lastModified.getTime();
+  });
+
+  return result;
+}
+
 class SpacesClient {
   constructor(endpoint, bucket, accessKeyId = null, secretAccessKey = null) {
     this.endpoint = endpoint;
@@ -59,9 +75,21 @@ class SpacesClient {
     return data.Contents;
   }
 
-  async listPathFiles(path) {
+  /**
+   * List files at path sorting them by Last Modified date.
+   * @param {String} path Path in DO Spaces to list files
+   * @param {Object} options Options for the list
+   * @param {('ASC'|'DESC')} options.sortByDate Sorting order 'ASC' or 'DESC'. 'ASC' is default.
+   */
+  async listPathFiles(path, options = {}) {
+    const { sortByDate } = options;
     const objects = await this.listPathObjects(path);
-    return objects.map(({ Key }) => this.getCDNURL(Key));
+    const filesList = objects.map(({ Key, LastModified }) => ({
+      url: this.getCDNURL(Key),
+      lastModified: LastModified
+    }));
+
+    return sortFilesByDate(filesList, sortByDate);
   }
 
   async deleteObjects(objects) {

@@ -39,12 +39,17 @@ client.uploadFile(uploadFilePath, destinationPath, permission);
 ### List files
 
 ```js
-client.listPathFiles(path);
+client.listPathFiles(path, options = {});
 ```
 
 - **path** : Path in DO Spaces to list
+- **options** : Options object
+  - **sortByDate** : Sort files by LastModified date, can be 'ASC' (default) or 'DESC'
 
-#### Return array with URL of files
+#### Return array of objects with the 'url' and 'lastModified' properties
+```js
+[ { url: 'file url', lastModified: Date }, ... ]
+```
 
 ### Delete one file
 
