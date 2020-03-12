@@ -47,6 +47,20 @@ class SpacesClient {
     return url.replace(/digitaloceanspaces/, 'cdn.digitaloceanspaces');
   }
 
+  async isFilePublic(filePath) {
+    const acl = await this.s3client.getObjectAcl({
+      Bucket: this.bucket,
+      Key: filePath,
+    }).promise();
+
+    const isPublic = acl.Grants.some(({ Grantee, Permission }) => {
+      const isAllUsers = Grantee.URI && Grantee.URI.match(/AllUsers/);
+      const isRead = Permission === 'READ';
+      return isAllUsers && isRead;
+    });
+    return isPublic;
+  }
+
   async uploadFile(
     uploadFilePath,
     destinationPath,
@@ -119,6 +133,20 @@ class SpacesClient {
   async deleteFolder(folderPath) {
     const objects = await this.listPathObjects(folderPath);
     return this.deleteObjects(objects);
+  }
+
+  async copyFile(
+    sourcePath,
+    destinationPath,
+  ) {
+    const isSourcePublic = await this.isFilePublic(sourcePath);
+
+    return this.s3client.copyObject({
+      Bucket: this.bucket,
+      CopySource: `/${this.bucket}/${sourcePath}`,
+      Key: destinationPath,
+      ACL: isSourcePublic ? 'public-read' : 'private',
+    }).promise();
   }
 
   async downloadFile(

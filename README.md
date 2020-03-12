@@ -67,6 +67,12 @@ client.deletePaths(paths);
 
 - **paths** : Array of relative paths in DO spaces to delete
 
+### Copy file within DO Spaces
+
+```js
+client.copyFile(sourcePath, destinationPath);
+```
+
 ### Download file
 
 ```js
