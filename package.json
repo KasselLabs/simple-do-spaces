@@ -1,6 +1,6 @@
 {
   "name": "simple-do-spaces",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "Simple Client to handle Digital Ocean Spaces files.",
   "main": "./lib/index.js",
   "scripts": {
