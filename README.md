@@ -45,6 +45,7 @@ client.listPathFiles(path, options = {});
 - **path** : Path in DO Spaces to list
 - **options** : Options object
   - **sortByDate** : Sort files by LastModified date, can be 'ASC' (default) or 'DESC'
+  - **pathOnly** : If true it will not return the complete URL just the path in DO Spaces
 
 #### Return array of objects with the 'url' and 'lastModified' properties
 ```js

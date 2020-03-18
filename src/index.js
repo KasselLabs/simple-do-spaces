@@ -94,6 +94,8 @@ class SpacesClient {
    * @param {String} path Path in DO Spaces to list files
    * @param {Object} options Options for the list
    * @param {('ASC'|'DESC')} options.sortByDate Sorting order 'ASC' or 'DESC'. 'ASC' is default.
+   * @param {Boolean} options.pathOnly If true it will not return the complete
+   * URL just the path in DO Spaces
    */
   async listPathFiles(path, options = {}) {
     const { sortByDate, pathOnly = false } = options;
