@@ -96,10 +96,10 @@ class SpacesClient {
    * @param {('ASC'|'DESC')} options.sortByDate Sorting order 'ASC' or 'DESC'. 'ASC' is default.
    */
   async listPathFiles(path, options = {}) {
-    const { sortByDate } = options;
+    const { sortByDate, pathOnly = false } = options;
     const objects = await this.listPathObjects(path);
     const filesList = objects.map(({ Key, LastModified }) => ({
-      url: this.getCDNURL(Key),
+      url: pathOnly ? Key : this.getCDNURL(Key),
       lastModified: LastModified
     }));
 
