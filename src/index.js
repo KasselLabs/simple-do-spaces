@@ -11,9 +11,9 @@ const SortOrder = {
 function sortFilesByDate(filesList, sortByDate = SortOrder.ASC) {
   const result = filesList.sort((a, b) => {
     if (sortByDate === SortOrder.DESC) {
-      return a.lastModified.getTime() < b.lastModified.getTime();
+      return b.lastModified.getTime() - a.lastModified.getTime();
     }
-    return a.lastModified.getTime() > b.lastModified.getTime();
+    return a.lastModified.getTime() - b.lastModified.getTime();
   });
 
   return result;
