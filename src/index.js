@@ -68,7 +68,7 @@ class SpacesClient {
     permission = 'private',
     options = {},
   ) {
-    const { useExponentialBackoff = false, ...spacesOptions } = options;
+    const { exponentialBackoff = false, ...spacesOptions } = options;
     const makeUpload = async () => {
       await this.s3client.upload({
         Bucket: this.bucket,
@@ -83,7 +83,7 @@ class SpacesClient {
       return this.getCDNURL(destinationPath);
     };
 
-    if (useExponentialBackoff) {
+    if (exponentialBackoff) {
       return backOff(() => makeUpload());
     }
 
