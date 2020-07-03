@@ -33,6 +33,8 @@ client.uploadFile(uploadFilePath, destinationPath, permission);
 - **uploadFilePath** : File path in file system
 - **destinationPath** : Path to save in DO Spaces
 - **permission** : Permission of the file, default is `private`, can also be `public-read`.
+- **options** : Options object to be sent to S3 SDK
+  - **exponentialBackoff** : Use exponential backoff if the upload failed
 
 #### Return file URL in DO Spaces CDN
 
