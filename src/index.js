@@ -2,6 +2,7 @@ import AWS from 'aws-sdk';
 import fs from 'fs';
 import nodePath from 'path';
 import mime from 'mime-types';
+import { backOff } from 'exponential-backoff';
 
 const SortOrder = {
   ASC: 'ASC',
@@ -67,17 +68,26 @@ class SpacesClient {
     permission = 'private',
     options = {},
   ) {
-    await this.s3client.upload({
-      Bucket: this.bucket,
-      Body: fs.createReadStream(uploadFilePath),
-      Key: destinationPath,
-      ACL: permission === 'public' ? 'public-read' : permission,
-      // ContentDisposition: 'attachment',
-      ContentType: mime.lookup(uploadFilePath),
-      ...options,
-    }).promise();
+    const { exponentialBackoff = false, ...spacesOptions } = options;
+    const makeUpload = async () => {
+      await this.s3client.upload({
+        Bucket: this.bucket,
+        Body: fs.createReadStream(uploadFilePath),
+        Key: destinationPath,
+        ACL: permission === 'public' ? 'public-read' : permission,
+        // ContentDisposition: 'attachment',
+        ContentType: mime.lookup(uploadFilePath),
+        ...spacesOptions,
+      }).promise();
 
-    return this.getCDNURL(destinationPath);
+      return this.getCDNURL(destinationPath);
+    };
+
+    if (exponentialBackoff) {
+      return backOff(() => makeUpload());
+    }
+
+    return makeUpload();
   }
 
   async listPathObjects(path) {
