@@ -2,6 +2,7 @@ import AWS from 'aws-sdk';
 import fs from 'fs';
 import nodePath from 'path';
 import mime from 'mime-types';
+import axios from 'axios';
 import { backOff } from 'exponential-backoff';
 
 const SortOrder = {
@@ -21,9 +22,18 @@ function sortFilesByDate(filesList, sortByDate = SortOrder.ASC) {
 }
 
 class SpacesClient {
-  constructor(endpoint, bucket, accessKeyId = null, secretAccessKey = null) {
+  constructor(
+    endpoint,
+    bucket,
+    accessKeyId = null,
+    secretAccessKey = null,
+    digitalOceanAPIToken = null,
+    cdnEndpointId = null,
+  ) {
     this.endpoint = endpoint;
     this.bucket = bucket;
+    this.digitalOceanAPIToken = digitalOceanAPIToken;
+    this.cdnEndpointId = cdnEndpointId;
 
     const options = {
       endpoint,
@@ -68,7 +78,7 @@ class SpacesClient {
     permission = 'private',
     options = {},
   ) {
-    const { exponentialBackoff = false, ...spacesOptions } = options;
+    const { exponentialBackoff = false, purgeCache = false, ...spacesOptions } = options;
     const makeUpload = async () => {
       await this.s3client.upload({
         Bucket: this.bucket,
@@ -79,6 +89,19 @@ class SpacesClient {
         ContentType: mime.lookup(uploadFilePath),
         ...spacesOptions,
       }).promise();
+
+      if (purgeCache) {
+        await axios.request({
+          url: `https://api.digitalocean.com/v2/cdn/endpoints/${this.cdnEndpointId}/cache`,
+          method: 'DELETE',
+          headers: {
+            Authorization: `Bearer ${this.digitalOceanAPIToken}`,
+          },
+          data: {
+            files: [destinationPath],
+          },
+        });
+      }
 
       return this.getCDNURL(destinationPath);
     };
