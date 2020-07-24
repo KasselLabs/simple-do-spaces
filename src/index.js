@@ -72,6 +72,35 @@ class SpacesClient {
     return isPublic;
   }
 
+  async getCDNEndpointId() {
+    if (!this.digitalOceanAPIToken) {
+      throw new Error('No API Token configured');
+    }
+
+    if (this.cdnEndpointId) {
+      return this.cdnEndpointId;
+    }
+
+    const cdnEndpointsResponse = await axios.request({
+      url: 'https://api.digitalocean.com/v2/cdn/endpoints',
+      headers: {
+        Authorization: `Bearer ${this.digitalOceanAPIToken}`,
+      },
+    });
+    const cdnEndpoints = cdnEndpointsResponse.data.endpoints;
+    const currentCdnEndpoint = cdnEndpoints.find(({ origin }) => {
+      const [endpointBucket] = origin.split('.');
+      return this.bucket === endpointBucket;
+    });
+
+    if (!currentCdnEndpoint) {
+      throw new Error(`No CDN endpoint found for bucket: ${this.bucket}`);
+    }
+
+    this.cdnEndpointId = currentCdnEndpoint.id;
+    return this.cdnEndpointId;
+  }
+
   async uploadFile(
     uploadFilePath,
     destinationPath,
@@ -91,8 +120,9 @@ class SpacesClient {
       }).promise();
 
       if (purgeCache) {
+        const cdnEndpointId = await this.getCDNEndpointId();
         await axios.request({
-          url: `https://api.digitalocean.com/v2/cdn/endpoints/${this.cdnEndpointId}/cache`,
+          url: `https://api.digitalocean.com/v2/cdn/endpoints/${cdnEndpointId}/cache`,
           method: 'DELETE',
           headers: {
             Authorization: `Bearer ${this.digitalOceanAPIToken}`,
