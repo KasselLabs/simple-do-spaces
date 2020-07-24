@@ -20,7 +20,7 @@ const client = new SpacesClient(
   'secretAccessKey' // Optional. Access key secret, can be env var AWS_SECRET_ACCESS_KEY
   'digitalOceanAPIToken' // Optional. Digital Ocean API Token, used to purge the cdn cache
   'cdnEndpointId' // Optional. CDN's Endpoint Id, used to purge the cdn cache,
-                     if not provided will be auto-extracted from bucketName.
+                     // if not provided will be auto-extracted from bucketName.
 );
 
 ```
