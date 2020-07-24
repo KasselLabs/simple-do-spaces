@@ -18,6 +18,9 @@ const client = new SpacesClient(
   'bucketName', // Required. Bucket name
   'accessKeyId', // Optional. Access key, can be provided via env var AWS_ACCESS_KEY_ID
   'secretAccessKey' // Optional. Access key secret, can be env var AWS_SECRET_ACCESS_KEY
+  'digitalOceanAPIToken' // Optional. Digital Ocean API Token, used to purge the cdn cache
+  'cdnEndpointId' // Optional. CDN's Endpoint Id, used to purge the cdn cache,
+                     // if not provided will be auto-extracted from bucketName.
 );
 
 ```
@@ -35,6 +38,7 @@ client.uploadFile(uploadFilePath, destinationPath, permission);
 - **permission** : Permission of the file, default is `private`, can also be `public-read`.
 - **options** : Options object to be sent to S3 SDK
   - **exponentialBackoff** : Use exponential backoff if the upload failed
+  - **purgeCache** : Purge the cache from CDN related to this new file
 
 #### Return file URL in DO Spaces CDN
 

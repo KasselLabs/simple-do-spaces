@@ -2,6 +2,7 @@ import AWS from 'aws-sdk';
 import fs from 'fs';
 import nodePath from 'path';
 import mime from 'mime-types';
+import axios from 'axios';
 import { backOff } from 'exponential-backoff';
 
 const SortOrder = {
@@ -21,9 +22,18 @@ function sortFilesByDate(filesList, sortByDate = SortOrder.ASC) {
 }
 
 class SpacesClient {
-  constructor(endpoint, bucket, accessKeyId = null, secretAccessKey = null) {
+  constructor(
+    endpoint,
+    bucket,
+    accessKeyId = null,
+    secretAccessKey = null,
+    digitalOceanAPIToken = null,
+    cdnEndpointId = null,
+  ) {
     this.endpoint = endpoint;
     this.bucket = bucket;
+    this.digitalOceanAPIToken = digitalOceanAPIToken;
+    this.cdnEndpointId = cdnEndpointId;
 
     const options = {
       endpoint,
@@ -62,13 +72,42 @@ class SpacesClient {
     return isPublic;
   }
 
+  async getCDNEndpointId() {
+    if (!this.digitalOceanAPIToken) {
+      throw new Error('No API Token configured');
+    }
+
+    if (this.cdnEndpointId) {
+      return this.cdnEndpointId;
+    }
+
+    const cdnEndpointsResponse = await axios.request({
+      url: 'https://api.digitalocean.com/v2/cdn/endpoints',
+      headers: {
+        Authorization: `Bearer ${this.digitalOceanAPIToken}`,
+      },
+    });
+    const cdnEndpoints = cdnEndpointsResponse.data.endpoints;
+    const currentCdnEndpoint = cdnEndpoints.find(({ origin }) => {
+      const [endpointBucket] = origin.split('.');
+      return this.bucket === endpointBucket;
+    });
+
+    if (!currentCdnEndpoint) {
+      throw new Error(`No CDN endpoint found for bucket: ${this.bucket}`);
+    }
+
+    this.cdnEndpointId = currentCdnEndpoint.id;
+    return this.cdnEndpointId;
+  }
+
   async uploadFile(
     uploadFilePath,
     destinationPath,
     permission = 'private',
     options = {},
   ) {
-    const { exponentialBackoff = false, ...spacesOptions } = options;
+    const { exponentialBackoff = false, purgeCache = false, ...spacesOptions } = options;
     const makeUpload = async () => {
       await this.s3client.upload({
         Bucket: this.bucket,
@@ -79,6 +118,20 @@ class SpacesClient {
         ContentType: mime.lookup(uploadFilePath),
         ...spacesOptions,
       }).promise();
+
+      if (purgeCache) {
+        const cdnEndpointId = await this.getCDNEndpointId();
+        await axios.request({
+          url: `https://api.digitalocean.com/v2/cdn/endpoints/${cdnEndpointId}/cache`,
+          method: 'DELETE',
+          headers: {
+            Authorization: `Bearer ${this.digitalOceanAPIToken}`,
+          },
+          data: {
+            files: [destinationPath],
+          },
+        });
+      }
 
       return this.getCDNURL(destinationPath);
     };
