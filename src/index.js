@@ -58,6 +58,14 @@ class SpacesClient {
     return url.replace(/digitaloceanspaces/, 'cdn.digitaloceanspaces');
   }
 
+  async getPresignedURL(path, expires = 900) {
+    return this.s3client.getSignedUrlPromise('getObject', {
+      Bucket: this.bucket,
+      Key: path,
+      Expires: expires,
+    });
+  }
+
   async isFilePublic(filePath) {
     const acl = await this.s3client.getObjectAcl({
       Bucket: this.bucket,
