@@ -90,6 +90,15 @@ client.downloadFile(filePathToRead, filePathToSave, createDirIfNotExists);
 - **filePathToSave** : Path to save in file system
 - **createDirIfNotExists** : Boolean to create the folder if the it doesn't exists. Default is `true`
 
+### Get Pre-signed URL for private files
+
+```js
+client.getPresignedURL(path, expires);
+```
+
+- **path** : Path for the file to get the pre-signed URL
+- **expires** : Time to expire the pre-signed URL (in seconds) (defaults to 900 seconds / 15 minutes);
+
 ## License
 
 MIT © Bruno Orlandi
