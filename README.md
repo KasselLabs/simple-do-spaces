@@ -2,6 +2,8 @@
 
 [![Build Status](https://travis-ci.org/KasselLabs/simple-do-spaces.svg?branch=master)](https://travis-ci.org/KasselLabs/simple-do-spaces) [![dependencies Status](https://david-dm.org/KasselLabs/simple-do-spaces/status.svg)](https://david-dm.org/KasselLabs/simple-do-spaces) [![devDependencies Status](https://david-dm.org/KasselLabs/simple-do-spaces/dev-status.svg)](https://david-dm.org/KasselLabs/simple-do-spaces?type=dev) [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 
+[![NPM](https://nodei.co/npm/simple-do-spaces.png?compact=true)](https://npmjs.org/package/simple-do-spaces)
+
 ## Usage
 
 ### Credentials setup
