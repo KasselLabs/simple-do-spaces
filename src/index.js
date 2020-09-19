@@ -56,15 +56,16 @@ class SpacesClient {
   }
 
   getCDNURL(path) {
-    const url = new URL(this.getURL(path));
+    const url = this.getURL(path);
+    const cdnUrl = new URL(url);
 
     if (this.customCdnHost) {
-      url.host =  this.customCdnHost;
+      cdnUrl.host = this.customCdnHost;
     } else {
-      url.host = 'cdn.digitaloceanspaces';
+      cdnUrl.host = 'cdn.digitaloceanspaces';
     }
 
-    return url.href;
+    return cdnUrl.href;
   }
 
   async getPresignedURL(path, expires = 900) {
