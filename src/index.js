@@ -35,6 +35,7 @@ class SpacesClient {
     this.bucket = bucket;
     this.digitalOceanAPIToken = digitalOceanAPIToken;
     this.cdnEndpointId = cdnEndpointId;
+    this.customCdnHost = customCdnHost;
 
     const options = {
       endpoint,
@@ -55,16 +56,15 @@ class SpacesClient {
   }
 
   getCDNURL(path) {
-    const url = this.getURL(path);
-    
+    const url = new URL(this.getURL(path));
+
     if (this.customCdnHost) {
-      url = new URL(url)
-      url.host =  this.customCdnHos
-      
-      return url.href
+      url.host =  this.customCdnHost;
+    } else {
+      url.host = 'cdn.digitaloceanspaces';
     }
-    
-    return url.replace(/digitaloceanspaces/, 'cdn.digitaloceanspaces');
+
+    return url.href;
   }
 
   async getPresignedURL(path, expires = 900) {
