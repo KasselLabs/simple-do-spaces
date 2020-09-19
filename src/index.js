@@ -29,6 +29,7 @@ class SpacesClient {
     secretAccessKey = null,
     digitalOceanAPIToken = null,
     cdnEndpointId = null,
+    customCdnHost = null,
   ) {
     this.endpoint = endpoint;
     this.bucket = bucket;
@@ -55,6 +56,14 @@ class SpacesClient {
 
   getCDNURL(path) {
     const url = this.getURL(path);
+    
+    if (this.customCdnHost) {
+      url = new URL(url)
+      url.host =  this.customCdnHos
+      
+      return url.href
+    }
+    
     return url.replace(/digitaloceanspaces/, 'cdn.digitaloceanspaces');
   }
 
